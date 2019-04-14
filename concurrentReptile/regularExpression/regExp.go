@@ -17,12 +17,25 @@ var (
 	//reEmail = `\w+@\w+\.com`
 	// 不仅仅局限于qq邮箱和com结尾, \w单词字符, +多个
 	reEmail = `\w+@\w+\.[a-z]{2,5}(\.[a-z]{2,5})?`
+	// 超链接, hao123就是爬a标签的href, [\s\S]+任意字符多个, ?非贪婪
+	reLink = `<a[\s\S]+?href="(http[\s\S]+?)"`
 )
 
 // 文档:https://studygolang.com/static/pkgdoc/pkg/regexp.htm
 func main() {
-	spiderPhone()
-	spiderEmail()
+	//spiderPhone()
+	//spiderEmail()
+	spiderLink()
+}
+
+func spiderLink() {
+	// 抓取超链接
+	html := getHtml("http://www.hao123.com")
+	re := regexp.MustCompile(reLink)
+	results := re.FindAllStringSubmatch(html, -1)
+	for _, x := range results {
+		fmt.Println(x[1])
+	}
 }
 
 func spiderEmail() {
