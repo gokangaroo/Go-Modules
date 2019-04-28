@@ -28,18 +28,29 @@ func GetJson(url string) (jsonStr string, err error) {
 }
 
 // 模糊查询
-func DoAmbiguousQuery(key string, page string, accurateChan chan<- string) (jsonStr string) {
-	/*TODO*/
-	accurateChan <- "两全十美"
-	accurateChan <- "隔岸观火"
-	accurateChan <- "人猿泰山"
+func DoAmbiguousQuery(key string, page string, accurateChan chan<- string) {
+	// 先拿到json
+	jsonStr, _ := GetJson("http://route.showapi.com/1196-1?showapi_appid=91358&showapi_sign=a0eef1cfdd2346c8a4ffe590c50eba4c&keyword=" + key + "&page=" + page + "&rows=10")
+	// 将json转化为成语集合, 并放入全局map
+	idiomsMap := ParseJson2Idioms(jsonStr)
+	for title, idiom := range idiomsMap {
+		dbData[title] = idiom
+	}
+	// 将成语名字写入精确管道
+	for title, _ := range idiomsMap {
+		accurateChan <- title
+	}
+	//accurateChan <- "两全十美"
+	//accurateChan <- "隔岸观火"
+	//accurateChan <- "人猿泰山"
 	fmt.Println("DoAmbiguousQuery", ": ", key, "-", page)
-	return ""
 }
 
 // 精确查询
-func DoAccurateQuery(key string) (jsonStr string) {
-	/*TODO*/
+func DoAccurateQuery(key string) {
+	jsonStr, _ := GetJson("http://route.showapi.com/1196-2?showapi_appid=91358&showapi_sign=a0eef1cfdd2346c8a4ffe590c50eba4c&keyword=" + key + "&page=1&rows=10")
+	idiom := ParseJson2Idiom(jsonStr)
+	// 完善模糊查询没有的数据
+	dbData[idiom.Title] = idiom
 	fmt.Println("DoAccurateQuery", ": ", key)
-	return ""
 }

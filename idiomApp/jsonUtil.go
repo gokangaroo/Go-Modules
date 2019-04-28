@@ -31,15 +31,31 @@ func ParseJson2Idioms(jsonStr string) (idiomsMap map[string]Idiom) {
 
 // two: 精确查询
 func ParseJson2Idiom(jsonStr string) (idiom Idiom) {
-	/*TODO*/
+	tmpMap := make(map[string]interface{})
+	json.Unmarshal([]byte(jsonStr), &tmpMap)
+	dataMap := tmpMap["showapi_res_body"].(map[string]interface{})["data"].(map[string]interface{})
+	for k, v := range dataMap {
+		valueStr := v.(string)
+		switch k {
+		case "title":
+			idiom.Title = valueStr
+		case "spell":
+			idiom.Spell = valueStr
+		case "sample":
+			idiom.Sample = valueStr
+		case "content":
+			idiom.Content = valueStr
+		case "derivation":
+			idiom.Derivation = valueStr
+		}
+	}
 	return Idiom{}
 }
 
 // json的文件持久化与读取
 func WriteIdioms2File(idiomsMap map[string]Idiom, dstFile string) {
 	//os.Create(dstFile)
-	//没有就创建, 有就覆盖
-	/*TODO*/
+	//没有就创建, 有就覆盖??我觉得后面添加会好点, 但是怎么处理重复数据, 还得另外, 这里就不搞了
 	file, _ := os.OpenFile(dstFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	defer file.Close()
 	encoder := json.NewEncoder(file)

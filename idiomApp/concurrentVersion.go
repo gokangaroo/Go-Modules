@@ -34,11 +34,14 @@ var (
 // 直接运行会undefined, 需要右键包build运行
 func main() {
 	// 读入命令行参数
-	//retValuesMap := GetCmdlineArgs( /*TODO*/)
-	//cmd := retValuesMap["cmd"].(string)
-	//poem := retValuesMap["poem"].(string)
-	//fmt.Println(cmd, poem)
-	poem := "两岸猿声啼不住"
+	// idiom -cmd start -poem 两岸猿声啼不住
+	cmdInfo := [3]interface{}{"cmd", "未知命令", "开始游戏!"}
+	poemInfo := [3]interface{}{"poem", "未知命令", "一行诗句!"}
+	retValuesMap := GetCmdlineArgs(cmdInfo, poemInfo)
+	cmd := retValuesMap["cmd"].(string)
+	poem := retValuesMap["poem"].(string)
+	fmt.Println(cmd, poem)
+	//poem := "两岸猿声啼不住"
 	// 使用rune[]或者fmt的unicode字符处理
 	// fmt.Printf("%c,%d", 22823, '大')
 	// 将诗句打碎丢入模糊管道
@@ -56,7 +59,7 @@ func main() {
 			case key := <-accurateChan:
 				go DoAccurateQuery(key)
 			case <-quitChan:
-				go WriteIdioms2File(dbData, jsonFile)
+				WriteIdioms2File(dbData, jsonFile)
 				os.Exit(0)
 			}
 		}

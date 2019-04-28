@@ -16,3 +16,12 @@ idiom.exe -cmd ambiguous -keyword 肉
 idiom.exe -cmd accurate -keyword 不知肉味
 ```
 
+## idiomApp本体
+
+使用cmd命令行, 开启诗句玩法, 好像有点问题...
+
+```bash
+go build -o idiom.exe ./
+idiom -cmd start -poem 两岸猿声啼不住
+```
+
