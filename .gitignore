@@ -1,3 +1,4 @@
 ### Goland ###
 *.exe
 .idea
+go.sum
