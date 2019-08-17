@@ -24,7 +24,7 @@ func main() {
 	hello.RegisterHelloServer(s, &hello_controller.HelloController{})
 
 	log.Println("Listen on " + Address)
-	if err := s.Server(listen); err != nil {
+	if err := s.Serve(listen); err != nil {
 		log.Fatalf("failed to server: %v", err)
 	}
 }
