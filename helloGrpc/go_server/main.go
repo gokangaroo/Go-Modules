@@ -2,7 +2,7 @@ package main
 
 import (
 	"google.golang.org/grpc"
-	"hello/go_client/proto/hello"
+	"hello/go_server/proto/hello"
 	"hello/go_server/controller/hello_controller"
 	"log"
 	"net"
@@ -19,11 +19,12 @@ func main() {
 	}
 
 	s := grpc.NewServer()
-	//服务注册
 
+	//服务注册
 	hello.RegisterHelloServer(s, &hello_controller.HelloController{})
 
 	log.Println("Listen on " + Address)
+
 	if err := s.Serve(listen); err != nil {
 		log.Fatalf("failed to server: %v", err)
 	}
