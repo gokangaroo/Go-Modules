@@ -2,19 +2,34 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+	"time"
 )
 
 func main() {
-	a, b := 20, 30
-	fmt.Println("a is", a, "b is", b)
-	a, b = 40, 50
-	fmt.Println("new a is", a, "new b is", b)
-	//a, b := 40, 50
-	//a = "nav"
+	var ff, e float64
+	e = 100.00
+	ff = -0.210615789
 
-	i := 55   //int
-	j := 67.8 //float64
-	//sum := i + j
-	sum := i + int(j) //j is converted to int
-	fmt.Println(sum)
+	// 先计算
+	qq := ff * e
+	fmt.Println(qq) // 输出 -21.0615789
+	// 再截取
+	qq = FloatRound(qq, 4)
+	fmt.Println(qq) // 输出 -21.0616
+
+	i1 := time.Now().UnixNano()
+	time.Sleep(1 * time.Second)
+	i2 := time.Now().UnixNano()
+	f := float64(i2-i1) / 1e6
+	fmt.Println(FloatRound(f, 2))
+	f = float64(111)
+	fmt.Println(f)
+}
+
+// 截取小数位数
+func FloatRound(f float64, n int) float64 {
+	format := "%." + strconv.Itoa(n) + "f"
+	res, _ := strconv.ParseFloat(fmt.Sprintf(format, f), 64)
+	return res
 }

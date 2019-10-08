@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 )
 
@@ -40,4 +41,14 @@ func main() {
 	if map1 == nil {
 
 	}
+	// map转json字符串
+	accountPatch := map[string]interface{}{
+		"command": "profile_change",
+		"effect": map[string]interface{}{
+			"mode": "right_now",
+		},
+		"data": map[string]interface{}{},
+	}
+	info, _ := json.Marshal(accountPatch)
+	fmt.Println(string(info))
 }
