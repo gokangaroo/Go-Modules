@@ -11,6 +11,8 @@ github.com/gogap/errors v0.0.0-20160523102334-149c546090d0 h1:VqIkkZjLjkDBqAGm0t
 github.com/gogap/errors v0.0.0-20160523102334-149c546090d0/go.mod h1:tbRYYYC7g/H7QlCeX0Z2zaThWKowF4QQCFIsGgAsqRo=
 github.com/gogap/stack v0.0.0-20150131034635-fef68dddd4f8 h1:AuxION6c7in+AsPmFjQTUKT6/o1suT8XEEpfU0pWsHA=
 github.com/gogap/stack v0.0.0-20150131034635-fef68dddd4f8/go.mod h1:6q1WEv2BiAO4FSdwLQTJbWQYAn1/qDNJHUGJNXCj9kM=
+github.com/gokangaroo/common v0.0.0-20191114094247-20f512bd2af4 h1:SWt8QKi2dJ70M2dEbDpAqjUq7LXWsjOinyZA8vsKnpo=
+github.com/gokangaroo/common v0.0.0-20191114094247-20f512bd2af4/go.mod h1:4kI4DjMT2DwMc61sOamRv0cPrewN4NfIZ/EtjUokhCc=
 github.com/golang/protobuf v1.3.1/go.mod h1:6lQm79b+lXiMfvg/cZm0SGofjICqVBUtrP5yJMmIC1U=
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/json-iterator/go v1.1.7 h1:KfgG9LzI+pYjr4xvmz/5H4FXjokeP+rlHLhv3iH62Fo=
