@@ -337,6 +337,23 @@ cap(ch) len(ch)
 	作业完成后，再将结果写入一个输出型缓冲信道。
 	从输出型缓冲信道读取并打印结果。
 	
+// 还有sync.Once来实现代码只执行一次, 比如实现单例模式
+```go
+// 使用sync.Once来实现, 与java使用内部类编译实现单例模式异曲同工
+var singleTon4 *singleTonDemo4
+var once sync.Once
+
+func NewSingleTon4() *singleTonDemo4 {
+	once.Do(func() {
+		singleTon4 = &singleTonDemo4{1}
+		fmt.Println("singleTonDemo4 created")
+	})
+	if singleTon4.count != 1 {
+		singleTon4.count++
+	}
+	return singleTon4
+}
+```
 
 ## 20 select
 
