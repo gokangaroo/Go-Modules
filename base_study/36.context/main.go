@@ -58,7 +58,9 @@ func main() {
 	//	fmt.Println(ctx.Err())
 	//}
 
-	// 3.WithValue例子
+	// 3.WithValue例子,
+	//cancel是主动撤销, 而timeout则分为超时和主动撤销(成功请求), 最后value的场景就是传递一个值.但是找不到的值可以在父节点找
+	//撤销会传给所有子值, 主要的context分为四种: 根Background, 可撤销的几个,携带值的, 不知道传啥的TODO
 	type contextKey string
 
 	f := func(ctx context.Context, k contextKey) {
