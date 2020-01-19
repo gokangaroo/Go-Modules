@@ -11,19 +11,29 @@ import (
 
 // RabbitMQ 声明队列类型
 type RabbitMQ struct {
+	conn     *amqp.Connection
 	channel  *amqp.Channel
 	Name     string
 	exchange string
 }
 
-// Connect 连接服务器
-func Connect(s string) *RabbitMQ {
+// ReConnect 重连
+func (q *RabbitMQ) ReConnect(s string) *RabbitMQ {
+	if q.conn != nil {
+		e := q.conn.Close()
+		failOnError(e, "连接关闭失败！")
+	}
+	if q.channel != nil {
+		e := q.channel.Close()
+		failOnError(e, "频道关闭失败！")
+	}
 	//连接rabbitmq
 	conn, e := amqp.Dial(s)
 	failOnError(e, "连接Rabbitmq服务器失败！")
 	ch, e := conn.Channel()
 	failOnError(e, "无法打开频道！")
 	mq := new(RabbitMQ)
+	mq.conn = conn
 	mq.channel = ch
 	return mq
 }
@@ -47,6 +57,7 @@ func New(s string, name string) *RabbitMQ {
 	failOnError(e, "初始化队列失败！")
 
 	mq := new(RabbitMQ)
+	mq.conn = conn
 	mq.channel = ch
 	mq.Name = q.Name
 	return mq
