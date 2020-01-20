@@ -1,10 +1,10 @@
 package main
 
 import (
+	"base_study/utils"
 	"container/list"
 	"container/ring"
 	"fmt"
-	"github.com/gokangaroo/common/utils"
 	"log"
 	"reflect"
 )
