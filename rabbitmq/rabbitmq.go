@@ -11,18 +11,13 @@ import (
 
 // RabbitMQ 声明队列类型
 type RabbitMQ struct {
-	conn     *amqp.Connection
 	channel  *amqp.Channel
 	Name     string
 	exchange string
 }
 
 // ReConnect 重连
-func (q *RabbitMQ) ReConnect(s string) *RabbitMQ {
-	if q.conn != nil {
-		e := q.conn.Close()
-		failOnError(e, "连接关闭失败！")
-	}
+func (q *RabbitMQ) ReConnect(s string) {
 	if q.channel != nil {
 		e := q.channel.Close()
 		failOnError(e, "频道关闭失败！")
@@ -32,10 +27,7 @@ func (q *RabbitMQ) ReConnect(s string) *RabbitMQ {
 	failOnError(e, "连接Rabbitmq服务器失败！")
 	ch, e := conn.Channel()
 	failOnError(e, "无法打开频道！")
-	mq := new(RabbitMQ)
-	mq.conn = conn
-	mq.channel = ch
-	return mq
+	q.channel = ch
 }
 
 // New 初始化单个消息队列
@@ -48,7 +40,7 @@ func New(s string, name string) *RabbitMQ {
 	failOnError(e, "无法打开频道！")
 	q, e := ch.QueueDeclare(
 		name,  //队列名
-		false, //是否开启持久化:保证及时rabbitmq挂了也不会影响=>如果是已有队列, 可能需要删掉再建立
+		true,  //是否开启持久化:保证及时rabbitmq挂了也不会影响=>如果是已有队列, 可能需要删掉再建立
 		true,  //不使用时删除
 		false, //排他
 		false, //不等待
@@ -57,7 +49,6 @@ func New(s string, name string) *RabbitMQ {
 	failOnError(e, "初始化队列失败！")
 
 	mq := new(RabbitMQ)
-	mq.conn = conn
 	mq.channel = ch
 	mq.Name = q.Name
 	return mq
@@ -72,10 +63,11 @@ func (q *RabbitMQ) Qos() {
 	failOnError(e, "无法设置QoS")
 }
 
-//配置交换机参数
+// 初始化交换机 exchange有多个种类：direct，fanout，topic，header
+// direct: 就是key_queue; fanout: 广播, 就是exchange注册的queue都投递
+// topic: 比direct多支持一个通配符(#而不是*); header: 就是匹配header这个map,下面的args
 
-//初始化交换机
-//第一个参数：rabbitmq服务器的链接，第二个参数：交换机名字，第三个参数：交换机类型
+// NewExchange 第一个参数：rabbitmq服务器的链接，第二个参数：交换机名字，第三个参数：交换机类型
 func NewExchange(s string, name string, typename string) {
 	//连接rabbitmq
 	conn, e := amqp.Dial(s)
@@ -95,13 +87,13 @@ func NewExchange(s string, name string, typename string) {
 
 }
 
-//删除交换机
+// ExchangeDelete 删除交换机
 func (q *RabbitMQ) ExchangeDelete(exchange string) {
 	e := q.channel.ExchangeDelete(exchange, false, true)
 	failOnError(e, "绑定队列失败！")
 }
 
-//绑定消息队列到哪个exchange
+// Bind 绑定消息队列到哪个exchange
 func (q *RabbitMQ) Bind(exchange string, key string) {
 	e := q.channel.QueueBind(
 		q.Name,
