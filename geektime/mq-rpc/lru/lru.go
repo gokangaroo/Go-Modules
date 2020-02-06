@@ -10,7 +10,8 @@ lru算法模拟, 使用list来记录, 新数据被访问后都移动到链表的
 > 对于golang而言, container的链表, 头尾实际是一样的, 对于删除而言, 当然为了与其他语言一致,还是删除开头
 而map的作用是为了快速访问, list主要是为了记录淘汰
 优点: 实现简单.
-缺点: 一份数据(node:Element)存了两份
+> LRU的改进算法: https://www.jianshu.com/p/c4e4d55706ff
+缺点: 一份数据存了两份: 我看错了, 实际map存的是地址, 那么这个没有问题
 */
 
 //func NewLRUCache(cap int)(*LRUCache)
@@ -31,8 +32,10 @@ func main() {
 	cache.Set(3, 3)
 	cache.Set(4, 4)
 	cache.Set(5, 5)
+	fmt.Println(cache.Size())
 	cache.Get(1)
 	cache.Set(6, 6)
+	fmt.Println(cache.Size())
 	for front := cache.dlist.Front(); front != nil; front = front.Next() {
 		fmt.Println(front.Value)
 	}
