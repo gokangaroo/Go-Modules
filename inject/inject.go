@@ -47,6 +47,7 @@ type injector struct {
 // InterfaceOf dereferences a pointer to an Interface type.
 func InterfaceOf(value interface{}) reflect.Type {
 	t := reflect.TypeOf(value)
+	//如果是指针类型
 	for t.Kind() == reflect.Ptr {
 		t = t.Elem()
 	}
