@@ -8,3 +8,4 @@
 5. gin-demo: gin框架使用
 6. inject: 实现依赖注入
 7. rabbitmq: rabbitmq的主要使用场景
+8. bloom: 布隆过滤器(大位数组、哈希函数)
