@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"time"
 )
 
 func main() {
@@ -20,6 +21,7 @@ func main() {
 	//		for {
 	//			select {
 	//			case <-ctx.Done():
+	//				fmt.Println("the ctx has been canceled")
 	//				return // returning not to leak the goroutine
 	//			case dst <- n:
 	//				n++
@@ -30,12 +32,13 @@ func main() {
 	//}
 	//
 	//ctx, cancel := context.WithCancel(context.Background())
-	//defer cancel() // cancel when we are finished consuming integers
 	//
 	//// range chan
 	//for n := range gen(ctx) {
 	//	fmt.Println(n)
 	//	if n == 5 {
+	//		cancel() // cancel when we are finished consuming integers
+	//		time.Sleep(1 * time.Second)
 	//		break
 	//	}
 	//}
@@ -44,36 +47,33 @@ func main() {
 
 	//d := time.Now().Add(50 * time.Millisecond)
 	//ctx, cancel := context.WithDeadline(context.Background(), d)
-	//ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
 	//
 	//// Even though ctx will be expired, it is good practice to call its
 	//// cancelation function in any case. Failure to do so may keep the
 	//// context and its parent alive longer than necessary.
-	//defer cancel()
-	//
-	//select {
-	//case <-time.After(1 * time.Second):
-	//	fmt.Println("overslept")
-	//case <-ctx.Done():
-	//	fmt.Println(ctx.Err())
-	//}
+	defer cancel()
+
+	select {
+	case <-time.After(1 * time.Second):
+		fmt.Println("overslept")
+	case <-ctx.Done():
+		fmt.Println(ctx.Err())
+	}
 
 	// 3.WithValue例子,
 	//cancel是主动撤销, 而timeout则分为超时和主动撤销(成功请求), 最后value的场景就是传递一个值.但是找不到的值可以在父节点找
 	//撤销会传给所有子值, 主要的context分为四种: 根Background, 可撤销的几个,携带值的, 不知道传啥的TODO
-	type contextKey string
-
-	f := func(ctx context.Context, k contextKey) {
-		if v := ctx.Value(k); v != nil {
-			fmt.Printf("key:%s's value found:%+v\n", k, v)
-			return
-		}
-		fmt.Printf("key:%s's value not found\n", k)
-	}
-
-	k := contextKey("language")
-	ctx := context.WithValue(context.Background(), k, "Golang")
-
-	f(ctx, k)
-	f(ctx, contextKey("color"))
+	//f := func(ctx context.Context, k string) {
+	//	if v := ctx.Value(k); v != nil {
+	//		fmt.Printf("key:%s's value found:%+v\n", k, v)
+	//		return
+	//	}
+	//	fmt.Printf("key:%s's value not found\n", k)
+	//}
+	//
+	//ctx := context.WithValue(context.Background(), "language", "Golang")
+	//
+	//f(ctx, "language")
+	//f(ctx, "color")
 }
