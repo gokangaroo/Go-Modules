@@ -2,8 +2,8 @@ package main
 
 import (
 	"google.golang.org/grpc"
-	"hello/go_server/proto/hello"
 	"hello/go_server/controller/hello_controller"
+	"hello/go_server/proto/hello"
 	"log"
 	"net"
 )

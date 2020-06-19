@@ -11,3 +11,5 @@
 8. bloom: 布隆过滤器(大位数组、哈希函数)
 9. webassembly: webassembly-go的demo
 10. websocket: 使用第三方websocket库的项目
+11. mongodb: 官方驱动库的使用, 简单查询和聚合pipeline查询.
+12. kafka: sarama库的使用demo, 生产者-消费者组
