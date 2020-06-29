@@ -5,6 +5,8 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -13,7 +15,6 @@ import (
 )
 
 type Consumer struct {
-	key   string
 	ready chan bool
 }
 
@@ -28,7 +29,7 @@ func (consumer *Consumer) Cleanup(sarama.ConsumerGroupSession) error {
 
 func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
 	for message := range claim.Messages() {
-		log.Printf("ConsumerId: %s, Message claimed: key = %s, value = %v, topic = %s, partition = %v, offset = %v", consumer.key, string(message.Key), string(message.Value), message.Topic, message.Partition, message.Offset)
+		log.Printf("GoRoutineId: %d, Message claimed: key = %s, value = %v, topic = %s, partition = %v, offset = %v", goId(), string(message.Key), string(message.Value), message.Topic, message.Partition, message.Offset)
 		session.MarkMessage(message, "")
 	}
 	return nil
@@ -66,31 +67,21 @@ func main() {
 	config.Consumer.Offsets.Initial = sarama.OffsetOldest
 
 	ctx, cancel := context.WithCancel(context.Background())
-	consumerGroup0, err := sarama.NewConsumerGroup([]string{broker}, groupId, config)
-	if err != nil {
-		log.Panicf("Error creating consumer group client: %v", err)
-	}
-	consumerGroup1, err := sarama.NewConsumerGroup([]string{broker}, groupId, config)
+	consumerGroup, err := sarama.NewConsumerGroup([]string{broker}, groupId, config)
 	if err != nil {
 		log.Panicf("Error creating consumer group client: %v", err)
 	}
 
 	wg := &sync.WaitGroup{}
 	// 自定义Consumer结构体,需要实现ConsumerGroupHandler接口, 并保证并发安全
-	consumer0 := Consumer{
-		key:   "0号",
+	consumer := Consumer{
 		ready: make(chan bool, 0),
 	}
-	consumer1 := Consumer{
-		key:   "1号",
-		ready: make(chan bool, 0),
-	}
-	go consumer0.Run(ctx, wg, consumerGroup0, topics)
-	go consumer1.Run(ctx, wg, consumerGroup1, topics)
+	go consumer.Run(ctx, wg, consumerGroup, topics)
 
-	<-consumer0.ready
-	<-consumer1.ready
+	<-consumer.ready
 
+	// block here
 	sigterm := make(chan os.Signal, 1)
 	signal.Notify(sigterm, syscall.SIGINT, syscall.SIGTERM)
 	select {
@@ -99,12 +90,20 @@ func main() {
 	case <-sigterm:
 		log.Println("terminating: via signal")
 	}
+
 	cancel()
 	wg.Wait()
-	if err = consumerGroup0.Close(); err != nil {
+	if err = consumerGroup.Close(); err != nil {
 		log.Panicf("Error closing client: %v", err)
 	}
-	if err = consumerGroup1.Close(); err != nil {
-		log.Panicf("Error closing client: %v", err)
-	}
+}
+
+// https://www.cnblogs.com/binHome/p/13052397.html
+func goId() int {
+	var buf [64]byte
+	n := runtime.Stack(buf[:], false)
+	stk := strings.TrimPrefix(string(buf[:n]), "goroutine ")
+	idField := strings.Fields(stk)[0]
+	id, _ := strconv.Atoi(idField)
+	return id
 }
