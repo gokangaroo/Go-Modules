@@ -1,12 +1,12 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"log"
 	"os"
 	"os/signal"
 	"runtime"
-	"strconv"
 	"strings"
 	"sync"
 	"syscall"
@@ -28,8 +28,9 @@ func (consumer *Consumer) Cleanup(sarama.ConsumerGroupSession) error {
 }
 
 func (consumer *Consumer) ConsumeClaim(session sarama.ConsumerGroupSession, claim sarama.ConsumerGroupClaim) error {
+	gid := goId()
 	for message := range claim.Messages() {
-		log.Printf("GoRoutineId: %d, Message claimed: key = %s, value = %v, topic = %s, partition = %v, offset = %v", goId(), string(message.Key), string(message.Value), message.Topic, message.Partition, message.Offset)
+		log.Printf("GoRoutineId: %s, Message claimed: key = %s, value = %v, topic = %s, partition = %v, offset = %v", gid, string(message.Key), string(message.Value), message.Topic, message.Partition, message.Offset)
 		session.MarkMessage(message, "")
 	}
 	return nil
@@ -99,11 +100,8 @@ func main() {
 }
 
 // https://www.cnblogs.com/binHome/p/13052397.html
-func goId() int {
+func goId() string {
 	var buf [64]byte
 	n := runtime.Stack(buf[:], false)
-	stk := strings.TrimPrefix(string(buf[:n]), "goroutine ")
-	idField := strings.Fields(stk)[0]
-	id, _ := strconv.Atoi(idField)
-	return id
+	return string(bytes.Fields(buf[:n])[1])
 }

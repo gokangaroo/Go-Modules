@@ -26,6 +26,8 @@ func main() {
 	config := sarama.NewConfig()
 	config.Version = version
 	config.Producer.Retry.Max = 5
+	config.Producer.Partitioner = sarama.NewRoundRobinPartitioner
+	//config.Producer.Compression=sarama.CompressionZSTD
 	config.Producer.RequiredAcks = sarama.WaitForAll
 	// 异步生产者
 	producer, err := sarama.NewAsyncProducer([]string{broker}, config)
