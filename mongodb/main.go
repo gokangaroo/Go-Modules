@@ -24,8 +24,6 @@ func main() {
 	if err != nil {
 		goto ERR
 	}
-	// todo is this reasonable
-	test.ID = primitive.NewObjectID()
 	collection = client.Database("demo").Collection("test")
 	res, err = collection.InsertOne(ctx, test)
 	if err != nil {
@@ -38,6 +36,6 @@ ERR:
 }
 
 type Test struct {
-	ID   primitive.ObjectID `bson:"_id"`
+	ID   primitive.ObjectID `bson:"_id,omitempty"`
 	Name string             `bson:"name"`
 }
