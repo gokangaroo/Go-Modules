@@ -1,0 +1,38 @@
+info(
+	title: go-zero-study // add title
+	desc: go-zero-study // add description
+	author: "huija"
+	email: "1150555483@qq.com"
+)
+
+type (
+	expandReq struct {
+		shorten string `form:"shorten"`
+	}
+	
+	expandResp struct {
+		url string `json:"url"`
+	}
+)
+
+type (
+	shortenReq struct {
+		url string `form:"url"`
+	}
+	
+	shortenResp struct {
+		shorten string `json:"shorten"`
+	}
+)
+
+service shorturl-api {
+	@server(
+		handler: ShortenHandler
+	)
+	get /shorten(shortenReq) returns(shortenResp)
+	
+	@server(
+		handler: ExpandHandler
+	)
+	get /expand(expandReq) returns(expandResp)
+}
